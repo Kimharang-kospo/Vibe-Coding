@@ -6,7 +6,7 @@ st.set_page_config(page_title="한국남부발전 설비감독 고민 상담방"
 
 # [설정] 코드 내부에 API Key를 고정하여 QR 접속 시 바로 사용 가능하도록 설정합니다.
 # "1234" 대신 실제 발급받으신 Upstage API Key 문자열을 입력해 두세요.
-DEFAULT_API_KEY = "up_XfF1gsQcJ1Chpvud2OkbNcTrdiyjb" 
+DEFAULT_API_KEY = "up_l9akpnqTddTFp7iT5Oe7MUB4b6CGi" 
 
 st.markdown("""
     <style>
