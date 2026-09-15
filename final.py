@@ -133,26 +133,28 @@ st.markdown("""
 
 st.sidebar.title("⚙️ KOSPO 시스템 인증")
 
-# 1. 관리자용: 언제든 사이드바에서 바꿀 수 있는 API 키 입력란
-admin_api_key = st.sidebar.text_input("마스터 API 키 설정", type="password", help="키가 바뀌면 여기를 수정하세요")
+# 👇 [설정] 여기에 본인의 진짜 업스테이지 API 키를 미리 숨겨두세요! (나중에 키 바뀔 때 여기만 수정하면 됩니다)
+HIDDEN_MASTER_KEY = "up_여기에본인의진짜키를넣으세요"
 
-# 2. QR 접속자용: '1234'를 치면 인증되도록 설정
+# 접속 암호 설정
 ACCESS_PASSWORD = "1234"
-entered_password = st.sidebar.text_input("접속 암호 입력 (예: 1234)", type="password")
 
-# 검증 로직: 암호가 '1234'이고, 관리자 키가 입력되어 있으면 작동!
+# QR 접속자들은 사이드바에 암호만 입력하면 됩니다.
+entered_password = st.sidebar.text_input("접속 암호를 입력하세요 (예: 1234)", type="password")
+
+# 암호 검증 로직: '1234'를 입력하면 코드에 숨겨둔 마스터 키가 자동으로 연결됩니다!
 if entered_password == ACCESS_PASSWORD:
-    if admin_api_key:
-        st.sidebar.success("✅ 인증 완료! KOSPO AI 연결됨")
-        upstage_api_key = admin_api_key
+    if HIDDEN_MASTER_KEY and HIDDEN_MASTER_KEY != "up_여기에본인의진짜키를넣으세요":
+        st.sidebar.success("✅ 인증 완료! KOSPO AI가 연결되었습니다.")
+        upstage_api_key = HIDDEN_MASTER_KEY
     else:
-        st.sidebar.warning("⚠️ 암호는 맞았으나, 상단에 '마스터 API 키'가 입력되지 않았습니다!")
+        st.sidebar.error("❌ 관리자가 코드 상단에 API 키를 설정하지 않았습니다.")
         upstage_api_key = None
 else:
     if entered_password:
         st.sidebar.error("❌ 접속 암호가 틀렸습니다!")
     else:
-        st.sidebar.info("💡 QR 접속자는 암호 '1234'를 입력하세요.")
+        st.sidebar.info("💡 접속 암호 '1234'를 입력해 주세요.")
     upstage_api_key = None
 
 st.sidebar.divider()
@@ -192,7 +194,7 @@ for message in st.session_state.messages:
 
 if prompt := st.chat_input("메시지를 입력하세요..."):
     if not upstage_api_key:
-        st.warning("⚠️ 관리자 API 키 또는 접속 암호(1234)를 확인해 주세요!")
+        st.warning("⚠️ 좌측 사이드바에 접속 암호(1234)를 먼저 입력해 주세요!")
     else:
         client = OpenAI(
             api_key=upstage_api_key, 
@@ -328,7 +330,7 @@ if prompt := st.chat_input("메시지를 입력하세요..."):
                         1. **[현실적인 인생 선배]**: 직장 선배 느낌으로 툭툭 던지는 현실적인 훈수 투. (~했어, ~해야지, 정신 차려 등 반말과 해요체를 섞어 씀)
                         2. **[엄마]**: 자식을 향한 애틋함과 걱정이 가득 담긴 다정한 반말 투. (~했어?, ~라니까, 아이고 내 새끼 등 완전한 반말 사용)
                         3. **[입사 동기]**: 찐친 동기끼리 속 시원하게 털어놓는 친근하고 거침없는 반말 투. (~잖아, ~지, 미치겠네 등 완전한 편한 반말 사용)
-                        4. **상호 반박 필수**: 각 패널은 서로의 의견에 대해 다른 관점으로 반박하거나 보완해야 하며, 자기 자신의 주장을 스스로 반박하지 마라.
+                        4. **상호 반박 필수**: 각 페르소나는 서로의 의견에 대해 다른 관점으로 반박하거나 보완해야 하며, 자기 자신의 주장을 스스로 반박하지 마라.
                         5. **행동 묘사 금지**: 괄호 '()'를 사용하여 감정이나 행동을 묘사하지 말고 대사만 출력해라.
 
                         [출력 양식]
@@ -342,7 +344,7 @@ if prompt := st.chat_input("메시지를 입력하세요..."):
                         🔥 **[제 2라운드: 서로의 의견에 대한 치열한 반박]**
                         - **[현실적인 인생 선배]**: (다른 패널의 의견에 대한 반박 대사)
                         - **[엄마]**: (다른 패널의 의견에 대한 반박 대사)
-                        - **[입상 동기]**: (다른 패널의 의견에 대한 반박 대사)
+                        - **[입사 동기]**: (다른 패널의 의견에 대한 반박 대사)
 
                         🔥 **[제 3라운드: 최종 합의점 도출 시도]**
                         - **[현실적인 인생 선배]**: (최종 타협안 대사)
