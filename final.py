@@ -134,7 +134,7 @@ st.markdown("""
 st.sidebar.title("⚙️ KOSPO 시스템 인증")
 
 # 👇 [설정] 여기에 본인의 진짜 업스테이지 API 키를 미리 숨겨두세요! (나중에 키 바뀔 때 여기만 수정하면 됩니다)
-HIDDEN_MASTER_KEY = "up_여기에본인의진짜키를넣으세요"
+HIDDEN_MASTER_KEY = "up_XfF1gsQcJ1Chpvud2OkbNcTrdiyjb"
 
 # 접속 암호 설정
 ACCESS_PASSWORD = "1234"
