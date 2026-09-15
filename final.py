@@ -3,7 +3,11 @@ from openai import OpenAI
 from duckduckgo_search import DDGS
 
 st.set_page_config(page_title="한국남부발전 설비감독 고민 상담방", page_icon="⚡", layout="centered")
-  
+
+# [설정] 코드 내부에 API Key를 고정하여 QR 접속 시 바로 사용 가능하도록 설정합니다.
+# "1234" 대신 실제 발급받으신 Upstage API Key 문자열을 입력해 두세요.
+DEFAULT_API_KEY = "up_XfF1gsQcJ1Chpvud2OkbNcTrdiyjb" 
+
 st.markdown("""
     <style>
     .stApp {
@@ -131,31 +135,8 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-st.sidebar.title("⚙️ KOSPO 시스템 인증")
-
-# 👇 [설정] 여기에 본인의 진짜 업스테이지 API 키를 미리 숨겨두세요! (나중에 키 바뀔 때 여기만 수정하면 됩니다)
-HIDDEN_MASTER_KEY = "up_XfF1gsQcJ1Chpvud2OkbNcTrdiyjb"
-
-# 접속 암호 설정
-ACCESS_PASSWORD = "1234"
-
-# QR 접속자들은 사이드바에 암호만 입력하면 됩니다.
-entered_password = st.sidebar.text_input("접속 암호를 입력하세요 (예: 1234)", type="password")
-
-# 암호 검증 로직: '1234'를 입력하면 코드에 숨겨둔 마스터 키가 자동으로 연결됩니다!
-if entered_password == ACCESS_PASSWORD:
-    if HIDDEN_MASTER_KEY and HIDDEN_MASTER_KEY != "up_여기에본인의진짜키를넣으세요":
-        st.sidebar.success("✅ 인증 완료! KOSPO AI가 연결되었습니다.")
-        upstage_api_key = HIDDEN_MASTER_KEY
-    else:
-        st.sidebar.error("❌ 관리자가 코드 상단에 API 키를 설정하지 않았습니다.")
-        upstage_api_key = None
-else:
-    if entered_password:
-        st.sidebar.error("❌ 접속 암호가 틀렸습니다!")
-    else:
-        st.sidebar.info("💡 접속 암호 '1234'를 입력해 주세요.")
-    upstage_api_key = None
+st.sidebar.title("⚙️ KOSPO 시스템 설정")
+st.sidebar.info("📌 QR 접속 모드 적용 완료\n(API Key 자동 연동 중)")
 
 st.sidebar.divider()
 st.sidebar.subheader("🗣️ 상담 모드 선택")
@@ -193,11 +174,14 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 if prompt := st.chat_input("메시지를 입력하세요..."):
-    if not upstage_api_key:
-        st.warning("⚠️ 좌측 사이드바에 접속 암호(1234)를 먼저 입력해 주세요!")
+    # 설정된 기본 API Key 사용 (1234 입력 시뮬레이션 포함)
+    active_api_key = DEFAULT_API_KEY
+    
+    if not active_api_key or active_api_key == "1234":
+        st.warning("⚠️ 유효한 Upstage API Key가 설정되지 않았습니다. 코드 상단의 `DEFAULT_API_KEY` 변수에 실제 키를 입력해 주세요!")
     else:
         client = OpenAI(
-            api_key=upstage_api_key, 
+            api_key=active_api_key, 
             base_url="https://api.upstage.ai/v1/solar"
         )
         
@@ -330,7 +314,7 @@ if prompt := st.chat_input("메시지를 입력하세요..."):
                         1. **[현실적인 인생 선배]**: 직장 선배 느낌으로 툭툭 던지는 현실적인 훈수 투. (~했어, ~해야지, 정신 차려 등 반말과 해요체를 섞어 씀)
                         2. **[엄마]**: 자식을 향한 애틋함과 걱정이 가득 담긴 다정한 반말 투. (~했어?, ~라니까, 아이고 내 새끼 등 완전한 반말 사용)
                         3. **[입사 동기]**: 찐친 동기끼리 속 시원하게 털어놓는 친근하고 거침없는 반말 투. (~잖아, ~지, 미치겠네 등 완전한 편한 반말 사용)
-                        4. **상호 반박 필수**: 각 페르소나는 서로의 의견에 대해 다른 관점으로 반박하거나 보완해야 하며, 자기 자신의 주장을 스스로 반박하지 마라.
+                        4. **상호 반박 필수**: 각 패널은 서로의 의견에 대해 다른 관점으로 반박하거나 보완해야 하며, 자기 자신의 주장을 스스로 반박하지 마라.
                         5. **행동 묘사 금지**: 괄호 '()'를 사용하여 감정이나 행동을 묘사하지 말고 대사만 출력해라.
 
                         [출력 양식]
